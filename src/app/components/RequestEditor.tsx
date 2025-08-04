@@ -125,7 +125,7 @@ export default function RequestEditor() {
 
       if (method === 'POST' && res.ok && parsedResponseBody?.id) {
         const newId = parsedResponseBody.id
-        setMethod('PUT')
+        setMethod('PUT') // Switch to PUT after successful POST
         setId(newId.toString())
         setBody(JSON.stringify({ ...parsedResponseBody, id: newId }, null, 2))
       }
@@ -161,8 +161,24 @@ export default function RequestEditor() {
         </div>
       )}
       {response?.status && !response.error && (
-        <div className="bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 text-green-700 dark:text-green-200 px-4 py-2 rounded-md text-sm">
-          Request successful (Status: {response.status})
+        <div
+          className={`border px-4 py-2 rounded-md text-sm ${
+            response.status === 200
+              ? 'bg-green-100 dark:bg-green-900 border-green-300 dark:border-green-700 text-green-700 dark:text-green-200'
+              : response.status >= 400 && response.status < 500
+              ? 'bg-yellow-100 dark:bg-yellow-900 border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-200'
+              : response.status >= 500
+              ? 'bg-red-100 dark:bg-red-900 border-red-300 dark:border-red-700 text-red-700 dark:text-red-200'
+              : 'bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-200'
+          }`}
+        >
+          {response.status === 200
+            ? `Request successful (Status: ${response.status})`
+            : response.status >= 400 && response.status < 500
+            ? `Client error (Status: ${response.status})`
+            : response.status >= 500
+            ? `Server error (Status: ${response.status})`
+            : `Response received (Status: ${response.status})`}
         </div>
       )}
 
@@ -196,17 +212,7 @@ export default function RequestEditor() {
           aria-label="Enter API URL"
           disabled={isLoading}
         />
-        {(method === 'PUT' || method === 'PATCH') && (
-          <input
-            type="text"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            placeholder="Resource ID (e.g., 7)"
-            className="w-24 sm:w-32 border border-gray-300 dark:border-gray-600 rounded-md p-2 sm:p-3 text-sm sm:text-base bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
-            aria-label="Resource ID"
-            disabled={isLoading}
-          />
-        )}
+   
         <button
           onClick={sendRequest}
           className={`bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-md text-sm sm:text-base font-medium hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors duration-200 flex items-center justify-center ${
@@ -240,7 +246,6 @@ export default function RequestEditor() {
         </button>
       </div>
 
-      {/* Headers Input */}
       <div className="w-full">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Headers</h2>
         {headers.map((h, i) => (
@@ -280,7 +285,6 @@ export default function RequestEditor() {
         </button>
       </div>
 
-      {/* Request Body */}
       {(method === 'POST' || method === 'PUT' || method === 'PATCH') && (
         <div className="w-full">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Request Body</h2>
