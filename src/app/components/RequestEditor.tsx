@@ -125,7 +125,7 @@ export default function RequestEditor() {
 
       if (method === 'POST' && res.ok && parsedResponseBody?.id) {
         const newId = parsedResponseBody.id
-        setMethod('PUT') // Switch to PUT after successful POST
+        // Removed setMethod('PUT') to keep method as POST
         setId(newId.toString())
         setBody(JSON.stringify({ ...parsedResponseBody, id: newId }, null, 2))
       }
@@ -212,7 +212,6 @@ export default function RequestEditor() {
           aria-label="Enter API URL"
           disabled={isLoading}
         />
-   
         <button
           onClick={sendRequest}
           className={`bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-md text-sm sm:text-base font-medium hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors duration-200 flex items-center justify-center ${
